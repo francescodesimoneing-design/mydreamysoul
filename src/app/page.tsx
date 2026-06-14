@@ -39,6 +39,51 @@ export default async function HomePage() {
         ctaSecondary={homepage.ctaSecondary}
       />
 
+      <section className="section-y bg-ivory">
+        <div className="container-page">
+          <AnimatedSection>
+            <SectionTitle
+              eyebrow="Filosofia sartoriale"
+              title="Due modi di vivere la sartoria"
+              description="Ogni creazione MyDreamySoul nasce dalla stessa attenzione per i dettagli, dalla stessa cura artigianale e dalla stessa passione per la modellistica. Puoi scegliere tra una creazione gia progettata da Serena oppure intraprendere un percorso completamente su misura."
+            />
+          </AnimatedSection>
+          <div className="mt-12 grid gap-8 lg:grid-cols-2">
+            {[
+              {
+                title: "Boutique Artigianale",
+                text: "Creazioni realizzate a mano da Serena, pensate per essere indossate con facilita senza rinunciare alla qualita sartoriale. Ogni capo nasce da cartamodelli originali, tessuti selezionati e lavorazioni curate nei dettagli.",
+                href: "/boutique",
+                cta: "Scopri la Boutique Artigianale",
+              },
+              {
+                title: "Sartoria su misura",
+                text: "Un percorso dedicato per chi desidera un capo progettato esclusivamente per se. Dalla consulenza iniziale alla realizzazione finale, ogni dettaglio viene studiato insieme: modello, proporzioni, tessuti, vestibilita e finiture.",
+                href: "/sartoria-su-misura",
+                cta: "Scopri il percorso su misura",
+              },
+            ].map((item) => (
+              <AnimatedSection key={item.title}>
+                <article className="flex h-full flex-col border-t border-anthracite/14 py-8">
+                  <h2 className="font-serif text-3xl font-semibold text-anthracite">
+                    {item.title}
+                  </h2>
+                  <p className="mt-5 flex-1 text-base leading-8 text-anthracite/68">
+                    {item.text}
+                  </p>
+                  <Link
+                    href={item.href}
+                    className="mt-8 inline-flex w-fit rounded-full bg-anthracite px-6 py-3 text-sm font-semibold text-ivory transition hover:-translate-y-0.5 hover:bg-anthracite/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sage"
+                  >
+                    {item.cta}
+                  </Link>
+                </article>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="section-y">
         <div className="container-page grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <AnimatedSection>
@@ -50,16 +95,16 @@ export default async function HomePage() {
                 Mani, cartamodelli, tessuti reali e dettagli scelti con cura.
               </p>
               <p className="max-w-sm text-sm leading-7 text-anthracite/62">
-                Le immagini del sito arrivano ora solo dai contenuti pubblicati
-                in Sanity Studio.
+                Creazioni sartoriali artigianali Made in Italy, realizzate a
+                mano con cura e attenzione ai dettagli.
               </p>
             </div>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <SectionTitle
               eyebrow="Atelier"
-              title="Un luogo dove il capo prende forma lentamente"
-              description="MyDreamySoul Handmade nasce dal gesto sartoriale, dalla modellistica e dalla ricerca di una femminilita personale. Ogni creazione e pensata per valorizzare chi la indossa, con proporzioni, tessuti e dettagli scelti senza fretta."
+              title="La stessa cura, dalla Boutique al su misura"
+              description="Dalle creazioni della Boutique Artigianale ai progetti completamente su misura, ogni capo nasce da cartamodelli originali e dalla passione per il lavoro sartoriale."
             />
             <div className="mt-8 grid gap-5 border-y border-anthracite/12 py-7 sm:grid-cols-3">
               {["Made in Italy", "Handmade", "Su misura"].map((value) => (
@@ -79,9 +124,9 @@ export default async function HomePage() {
         <div className="container-page">
           <AnimatedSection>
             <SectionTitle
-              eyebrow="Servizi"
-              title="Creazioni sartoriali per momenti da ricordare"
-              description="Dalla gonna perfetta al fiocco nascita personalizzato, ogni servizio mantiene un approccio intimo, artigianale e su misura."
+              eyebrow="Esperienza artigianale"
+              title="Qualita, unicita e rapporto diretto con Serena"
+              description="Non semplici capi o accessori, ma realizzazioni che uniscono creativita, lavoro manuale, cura delle proporzioni e attenzione alle finiture."
             />
           </AnimatedSection>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

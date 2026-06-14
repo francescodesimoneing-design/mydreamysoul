@@ -10,7 +10,7 @@ import { getObjectPosition } from "@/lib/image-position";
 export const metadata: Metadata = {
   title: "Chi Sono",
   description:
-    "Scopri la storia di Serena Manna, fondatrice di MyDreamySoul Handmade, e la filosofia sartoriale dell'atelier.",
+    "Scopri Serena Manna, modellista sartoriale e fondatrice di MyDreamySoul Handmade.",
 };
 
 export default async function ChiSonoPage() {
@@ -64,7 +64,7 @@ export default async function ChiSonoPage() {
           <AnimatedSection>
             <SectionTitle
               eyebrow="La mia storia"
-              title="Un percorso nato tra creativita e precisione"
+              title="Serena Manna, modellista sartoriale"
             />
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
@@ -74,6 +74,40 @@ export default async function ChiSonoPage() {
               ))}
             </div>
           </AnimatedSection>
+        </div>
+      </section>
+
+      <section className="section-y bg-ivory">
+        <div className="container-page grid gap-8 md:grid-cols-4">
+          {[
+            {
+              title: "Studio della vestibilita",
+              text: "Ogni capo viene pensato per accompagnare il corpo con naturalezza.",
+            },
+            {
+              title: "Cartamodello originale",
+              text: "La forma nasce dal disegno tecnico, dalle misure e dalla mano sartoriale.",
+            },
+            {
+              title: "Proporzioni curate",
+              text: "Volumi, lunghezze e dettagli vengono studiati per dare equilibrio al capo.",
+            },
+            {
+              title: "Lavoro manuale",
+              text: "La qualita emerge nelle finiture, nei passaggi lenti e nella cura dei dettagli.",
+            },
+          ].map((item) => (
+            <AnimatedSection key={item.title}>
+              <article className="border-t border-anthracite/14 py-7">
+                <h2 className="font-serif text-2xl font-semibold leading-tight text-anthracite">
+                  {item.title}
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-anthracite/66">
+                  {item.text}
+                </p>
+              </article>
+            </AnimatedSection>
+          ))}
         </div>
       </section>
 

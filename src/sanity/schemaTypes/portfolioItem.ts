@@ -6,8 +6,9 @@ const categories = [
   "Abiti",
   "Gonne",
   "Cappotti",
-  "Sartoria su misura",
   "Fiocchi nascita",
+  "Accessori",
+  "Sartoria su misura",
 ];
 
 export const portfolioItem = defineType({

@@ -19,13 +19,13 @@ const portfolioCategories: PortfolioCategory[] = [
   "Abiti",
   "Gonne",
   "Cappotti",
-  "Sartoria su misura",
   "Fiocchi nascita",
+  "Accessori",
+  "Sartoria su misura",
 ];
 
 const productCategories: ProductCategory[] = [
   "Gonne",
-  "Gonne a ruota",
   "Gonnoni",
   "Fiocchi nascita",
   "Accessori",

@@ -19,8 +19,9 @@ export type PortfolioCategory =
   | "Abiti"
   | "Gonne"
   | "Cappotti"
-  | "Sartoria su misura"
-  | "Fiocchi nascita";
+  | "Fiocchi nascita"
+  | "Accessori"
+  | "Sartoria su misura";
 
 export type PortfolioItem = {
   id: string;
@@ -36,7 +37,6 @@ export type PortfolioItem = {
 
 export type ProductCategory =
   | "Gonne"
-  | "Gonne a ruota"
   | "Gonnoni"
   | "Fiocchi nascita"
   | "Accessori"

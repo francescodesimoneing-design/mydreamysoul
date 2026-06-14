@@ -14,8 +14,9 @@ const categories: ActiveCategory[] = [
   "Abiti",
   "Gonne",
   "Cappotti",
-  "Sartoria su misura",
   "Fiocchi nascita",
+  "Accessori",
+  "Sartoria su misura",
 ];
 
 type PortfolioGalleryProps = {

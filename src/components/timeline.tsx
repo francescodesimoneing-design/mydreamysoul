@@ -10,7 +10,7 @@ type TimelineProps = {
 
 export function Timeline({ steps }: TimelineProps) {
   return (
-    <ol className="relative grid gap-6 lg:grid-cols-5 lg:gap-0">
+    <ol className="relative grid gap-6 lg:grid-cols-6 lg:gap-0">
       {steps.map((step, index) => (
         <motion.li
           key={step.title}

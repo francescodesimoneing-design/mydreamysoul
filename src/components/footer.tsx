@@ -7,7 +7,7 @@ import type { SiteSettings } from "@/types";
 const footerLinks = [
   { href: "/chi-sono", label: "Chi sono" },
   { href: "/sartoria-su-misura", label: "Sartoria su misura" },
-  { href: "/boutique", label: "Boutique" },
+  { href: "/boutique", label: "Boutique Artigianale" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/contatti", label: "Contatti" },
 ];

@@ -4,7 +4,6 @@ import { imagePositionOptions } from "./imagePosition";
 
 const categories = [
   "Gonne",
-  "Gonne a ruota",
   "Gonnoni",
   "Fiocchi nascita",
   "Accessori",
@@ -13,7 +12,7 @@ const categories = [
 
 export const product = defineType({
   name: "product",
-  title: "Boutique",
+  title: "Boutique Artigianale",
   type: "document",
   fields: [
     defineField({

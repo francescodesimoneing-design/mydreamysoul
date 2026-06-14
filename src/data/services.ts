@@ -9,9 +9,9 @@ export const services: Service[] = [
     href: "/sartoria-su-misura",
   },
   {
-    title: "Gonne sartoriali",
+    title: "Boutique artigianale",
     description:
-      "Gonne a ruota, gonnoni e modelli femminili con volumi calibrati, finiture curate e tessuti scelti insieme.",
+      "Creazioni gia progettate da Serena, realizzate a mano con cartamodelli originali e dettagli sartoriali.",
     icon: "scissors",
     href: "/boutique",
   },
@@ -51,6 +51,11 @@ export const processSteps: TimelineStep[] = [
     title: "Realizzazione",
     description:
       "Taglio, confezione e rifiniture eseguite a mano o con tecniche sartoriali controllate in atelier.",
+  },
+  {
+    title: "Prove e rifiniture",
+    description:
+      "Verifica della vestibilita, controllo delle proporzioni e rifiniture finali per armonizzare il capo sul corpo.",
   },
   {
     title: "Capo finito",

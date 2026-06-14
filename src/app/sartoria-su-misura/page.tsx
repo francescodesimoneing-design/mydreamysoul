@@ -9,7 +9,7 @@ import { processSteps } from "@/data/services";
 export const metadata: Metadata = {
   title: "Sartoria Su Misura",
   description:
-    "Percorso cliente per capi sartoriali su misura: consulenza, cartamodello, scelta tessuti, realizzazione e capo finito.",
+    "Percorso sartoriale premium su misura: consulenza dedicata, misure personalizzate, cartamodello dedicato, scelta tessuti, prove e rifiniture.",
 };
 
 export default function SartoriaSuMisuraPage() {
@@ -22,11 +22,12 @@ export default function SartoriaSuMisuraPage() {
               Sartoria su misura
             </p>
             <h1 className="font-serif text-5xl font-semibold leading-tight text-anthracite text-balance sm:text-6xl">
-              Un percorso sartoriale costruito intorno a te
+              Sartoria su misura, progettata esclusivamente per te
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-anthracite/68">
-              Dalla prima conversazione alla consegna, ogni fase serve a
-              trasformare un&apos;idea in un capo personale, proporzionato e curato.
+              Un percorso premium per chi desidera una realizzazione studiata
+              sulle proprie misure, sul proprio stile e sull&apos;occasione da
+              vivere.
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
@@ -35,12 +36,12 @@ export default function SartoriaSuMisuraPage() {
                 Percorso
               </p>
               <p className="font-serif text-4xl font-semibold leading-tight text-anthracite text-balance sm:text-5xl">
-                Una creazione nasce dal dialogo, poi prende forma con tecnica e
-                misura.
+                Consulenza dedicata, misure personalizzate e cartamodello
+                dedicato.
               </p>
               <p className="max-w-sm text-sm leading-7 text-anthracite/62">
-                Le immagini di progetto vengono gestite dal portfolio Sanity,
-                senza fotografie stock.
+                Modello, proporzioni, tessuti, vestibilita e finiture vengono
+                studiati insieme a Serena.
               </p>
             </div>
           </AnimatedSection>
@@ -52,8 +53,8 @@ export default function SartoriaSuMisuraPage() {
           <AnimatedSection>
             <SectionTitle
               eyebrow="Timeline"
-              title="Cinque passaggi, una creazione unica"
-              description="Il processo resta chiaro dall'inizio, con decisioni condivise e attenzione tecnica a ogni passaggio."
+              title="Un percorso sartoriale fatto di ascolto e precisione"
+              description="Dalla consulenza iniziale alle prove, ogni fase valorizza il rapporto diretto con Serena e la cura artigianale del capo."
             />
           </AnimatedSection>
           <div className="mt-14">
@@ -68,7 +69,7 @@ export default function SartoriaSuMisuraPage() {
             <SectionTitle
               eyebrow="Preventivo"
               title="Racconta il capo che immagini"
-              description="Invia una richiesta con note, occasione d'uso e immagini di riferimento. Il form e gia predisposto per un futuro flusso ecommerce o CRM."
+              description="Invia una richiesta con note, occasione d'uso e immagini di riferimento. Serena potra valutare modello, proporzioni, tessuti, tempi e rifiniture."
             />
             <div className="mt-8 border-t border-anthracite/14 pt-6 text-sm leading-7 text-anthracite/64">
               <p>

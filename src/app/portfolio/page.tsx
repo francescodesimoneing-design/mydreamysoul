@@ -8,7 +8,7 @@ import { getPortfolioItems } from "@/lib/cms";
 export const metadata: Metadata = {
   title: "Portfolio",
   description:
-    "Galleria portfolio MyDreamySoul Handmade con abiti, gonne, cappotti, sartoria su misura e fiocchi nascita.",
+    "Galleria portfolio MyDreamySoul Handmade con abiti, gonne, cappotti, fiocchi nascita, accessori e sartoria su misura.",
 };
 
 export default async function PortfolioPage() {
@@ -23,7 +23,7 @@ export default async function PortfolioPage() {
               Portfolio
             </p>
             <h1 className="max-w-4xl font-serif text-5xl font-semibold leading-tight text-anthracite text-balance sm:text-6xl">
-              Una galleria di capi, dettagli e storie sartoriali
+              Realizzazioni sartoriali, dettagli e progetti su misura
             </h1>
           </AnimatedSection>
         </div>
@@ -34,8 +34,8 @@ export default async function PortfolioPage() {
           <AnimatedSection>
             <SectionTitle
               eyebrow="Galleria"
-              title="Ispirazione editoriale, categorie chiare"
-              description="Filtra le creazioni per tipologia e scopri il linguaggio visivo dell'atelier."
+              title="Creazioni organizzate per tipologia"
+              description="Filtra abiti, gonne, cappotti, fiocchi nascita, accessori e progetti su misura pubblicati da Serena."
             />
           </AnimatedSection>
           <div className="mt-12">

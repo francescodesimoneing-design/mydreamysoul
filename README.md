@@ -68,7 +68,7 @@ Nello Studio crea e pubblica:
 - `Chi sono`: titolo, sottotitolo, testo principale e immagine.
 - `Impostazioni sito`: WhatsApp, email, Instagram, indirizzo e SEO principale.
 - `Portfolio`: progetti con titolo, categoria, descrizione, immagine, featured e ordine.
-- `Boutique`: prodotti vetrina con categoria, immagine, prezzo da e disponibilita su richiesta.
+- `Boutique Artigianale`: creazioni con categoria, immagine, prezzo da e disponibilita su richiesta.
 - `Testimonianze`: nome, testo, tipo prodotto e featured.
 
 Le modifiche pubblicate vengono lette dal sito tramite GROQ. Se Sanity non e configurato o non contiene documenti validi, il sito mostra stati vuoti neutri e non usa immagini stock.
