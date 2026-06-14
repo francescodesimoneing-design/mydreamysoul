@@ -1,0 +1,39 @@
+{
+  "name": "mydreamysoul-handmade",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "studio": "sanity dev",
+    "deploy:studio": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^4.22.0",
+    "@tailwindcss/postcss": "^4.1.17",
+    "framer-motion": "^12.0.0",
+    "groq": "^5.30.0",
+    "lucide-react": "^0.468.0",
+    "next": "^15.0.0",
+    "next-sanity": "^11.6.13",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sanity": "^4.22.0",
+    "styled-components": "^6.4.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@types/node": "^20.17.9",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^15.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,412 @@
+import { cache } from "react";
+
+import { getSanityImageUrl, type SanityImageSource } from "@/lib/image";
+import { groq, sanityFetch } from "@/lib/sanity";
+import { siteConfig } from "@/lib/site";
+import type {
+  AboutContent,
+  HomepageContent,
+  ImagePosition,
+  PortfolioCategory,
+  PortfolioItem,
+  Product,
+  ProductCategory,
+  SiteSettings,
+  Testimonial,
+} from "@/types";
+
+const portfolioCategories: PortfolioCategory[] = [
+  "Abiti",
+  "Gonne",
+  "Cappotti",
+  "Sartoria su misura",
+  "Fiocchi nascita",
+];
+
+const productCategories: ProductCategory[] = [
+  "Gonne",
+  "Gonne a ruota",
+  "Gonnoni",
+  "Fiocchi nascita",
+  "Accessori",
+  "Idee regalo",
+];
+
+const portfolioItemFields = groq`
+  _id,
+  title,
+  "slug": slug.current,
+  category,
+  description,
+  image,
+  "alt": coalesce(image.alt, title),
+  "imagePosition": coalesce(imagePosition, "center"),
+  featured,
+  order
+`;
+
+const productFields = groq`
+  _id,
+  title,
+  "slug": slug.current,
+  category,
+  description,
+  image,
+  "alt": coalesce(image.alt, title),
+  "imagePosition": coalesce(imagePosition, "center"),
+  priceFrom,
+  availableOnRequest,
+  featured,
+  order
+`;
+
+const portfolioItemsQuery = groq`
+  *[_type == "portfolioItem"] | order(coalesce(order, 9999) asc, _createdAt desc) {
+    ${portfolioItemFields}
+  }
+`;
+
+const productsQuery = groq`
+  *[_type == "product"] | order(coalesce(order, 9999) asc, _createdAt desc) {
+    ${productFields}
+  }
+`;
+
+const testimonialsQuery = groq`
+  *[_type == "testimonial" && coalesce(featured, true) == true] | order(_createdAt desc) {
+    _id,
+    name,
+    text,
+    productType,
+    featured
+  }
+`;
+
+const homepageQuery = groq`
+  *[_type == "homepage"][0] {
+    heroTitle,
+    heroSubtitle,
+    heroImage,
+    "heroImageAlt": coalesce(heroImage.alt, heroTitle),
+    "heroImagePosition": coalesce(heroImagePosition, "center"),
+    ctaPrimary,
+    ctaSecondary,
+    featuredPortfolio[]->{
+      ${portfolioItemFields}
+    }
+  }
+`;
+
+const aboutQuery = groq`
+  *[_type == "about"][0] {
+    title,
+    subtitle,
+    body,
+    image,
+    "imageAlt": coalesce(image.alt, title),
+    "imagePosition": coalesce(imagePosition, "center")
+  }
+`;
+
+const siteSettingsQuery = groq`
+  *[_type == "siteSettings"][0] {
+    whatsappNumber,
+    email,
+    instagramUrl,
+    address,
+    seoTitle,
+    seoDescription
+  }
+`;
+
+type SanityPortfolioItem = {
+  _id: string;
+  slug?: string;
+  title?: string;
+  category?: string;
+  description?: string;
+  image?: SanityImageSource;
+  alt?: string;
+  imagePosition?: string;
+  featured?: boolean;
+  order?: number;
+};
+
+type SanityProduct = {
+  _id: string;
+  slug?: string;
+  title?: string;
+  category?: string;
+  description?: string;
+  image?: SanityImageSource;
+  alt?: string;
+  imagePosition?: string;
+  priceFrom?: string;
+  availableOnRequest?: boolean;
+  featured?: boolean;
+  order?: number;
+};
+
+type SanityTestimonial = {
+  _id: string;
+  name?: string;
+  text?: string;
+  productType?: string;
+  featured?: boolean;
+};
+
+type SanityHomepage = {
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: SanityImageSource;
+  heroImageAlt?: string;
+  heroImagePosition?: string;
+  ctaPrimary?: string;
+  ctaSecondary?: string;
+  featuredPortfolio?: SanityPortfolioItem[];
+};
+
+type SanityAbout = {
+  title?: string;
+  subtitle?: string;
+  body?: string;
+  image?: SanityImageSource;
+  imageAlt?: string;
+  imagePosition?: string;
+};
+
+type SanitySiteSettings = {
+  whatsappNumber?: string;
+  email?: string;
+  instagramUrl?: string;
+  address?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+const fallbackHomepage: HomepageContent = {
+  heroTitle: "Aggiungi contenuti da Sanity Studio",
+  heroSubtitle:
+    "Carica una hero reale dell'atelier e aggiorna testi e call to action dalla sezione Homepage.",
+  heroImage: null,
+  heroImageAlt: "",
+  heroImagePosition: "center",
+  ctaPrimary: "Richiedi una creazione su misura",
+  ctaSecondary: "Vai al portfolio",
+  featuredPortfolio: [],
+};
+
+const fallbackAbout: AboutContent = {
+  title: "Aggiungi la sezione Chi sono da Sanity Studio",
+  subtitle:
+    "Inserisci storia, filosofia e immagine reale dell'atelier nel documento Chi sono.",
+  body:
+    "Aggiungi contenuti da Sanity Studio per raccontare Serena, il laboratorio e il processo sartoriale.",
+  image: null,
+  imageAlt: "",
+  imagePosition: "center",
+};
+
+const fallbackSiteSettings: SiteSettings = {
+  name: siteConfig.name,
+  title: siteConfig.title,
+  description: siteConfig.description,
+  url: process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url,
+  founder: siteConfig.founder,
+  email: siteConfig.email,
+  links: siteConfig.links,
+};
+
+function isPortfolioCategory(category: string | undefined): category is PortfolioCategory {
+  return Boolean(category && portfolioCategories.includes(category as PortfolioCategory));
+}
+
+function isProductCategory(category: string | undefined): category is ProductCategory {
+  return Boolean(category && productCategories.includes(category as ProductCategory));
+}
+
+function isImagePosition(position: string | undefined): position is ImagePosition {
+  return (
+    position === "center" ||
+    position === "top" ||
+    position === "bottom" ||
+    position === "left" ||
+    position === "right"
+  );
+}
+
+function getImagePosition(position: string | undefined): ImagePosition {
+  return isImagePosition(position) ? position : "center";
+}
+
+function isDefined<T>(value: T | null | undefined): value is T {
+  return value != null;
+}
+
+function getWhatsAppUrl(number: string | undefined) {
+  const cleanNumber = number?.replace(/\D/g, "");
+
+  if (!cleanNumber) {
+    return siteConfig.links.whatsapp;
+  }
+
+  return `https://wa.me/${cleanNumber}?text=Ciao%20Serena%2C%20vorrei%20richiedere%20una%20creazione%20sartoriale%20su%20misura.`;
+}
+
+function mapPortfolioItem(item: SanityPortfolioItem): PortfolioItem | null {
+  const image = getSanityImageUrl(item.image, { width: 1400 });
+
+  if (!item.title || !item.description || !image || !isPortfolioCategory(item.category)) {
+    return null;
+  }
+
+  return {
+    id: item.slug || item._id,
+    title: item.title,
+    category: item.category,
+    description: item.description,
+    image,
+    alt: item.alt || item.title,
+    imagePosition: getImagePosition(item.imagePosition),
+    featured: item.featured,
+    order: item.order,
+  };
+}
+
+function mapProduct(item: SanityProduct): Product | null {
+  const image = getSanityImageUrl(item.image, { width: 1400 });
+
+  if (!item.title || !item.description || !image || !isProductCategory(item.category)) {
+    return null;
+  }
+
+  return {
+    id: item.slug || item._id,
+    name: item.title,
+    category: item.category,
+    description: item.description,
+    image,
+    alt: item.alt || item.title,
+    imagePosition: getImagePosition(item.imagePosition),
+    startingPrice: item.priceFrom || "Da definire",
+    madeToOrder: item.availableOnRequest ?? true,
+    featured: item.featured,
+    order: item.order,
+  };
+}
+
+function mapTestimonial(item: SanityTestimonial): Testimonial | null {
+  if (!item.name || !item.text) {
+    return null;
+  }
+
+  return {
+    name: item.name,
+    role: item.productType || "Creazione sartoriale",
+    quote: item.text,
+  };
+}
+
+export const getPortfolioItems = cache(async (): Promise<PortfolioItem[]> => {
+  const items = await sanityFetch<SanityPortfolioItem[]>({
+    query: portfolioItemsQuery,
+    tags: ["portfolioItem"],
+  });
+
+  const mappedItems = items?.map(mapPortfolioItem).filter(isDefined) ?? [];
+  return mappedItems;
+});
+
+export const getProducts = cache(async (): Promise<Product[]> => {
+  const items = await sanityFetch<SanityProduct[]>({
+    query: productsQuery,
+    tags: ["product"],
+  });
+
+  const mappedItems = items?.map(mapProduct).filter(isDefined) ?? [];
+  return mappedItems;
+});
+
+export const getTestimonials = cache(async (): Promise<Testimonial[]> => {
+  const items = await sanityFetch<SanityTestimonial[]>({
+    query: testimonialsQuery,
+    tags: ["testimonial"],
+  });
+
+  const mappedItems = items?.map(mapTestimonial).filter(isDefined) ?? [];
+  return mappedItems;
+});
+
+export const getHomepageContent = cache(async (): Promise<HomepageContent> => {
+  const homepage = await sanityFetch<SanityHomepage>({
+    query: homepageQuery,
+    tags: ["homepage", "portfolioItem"],
+  });
+
+  if (!homepage) {
+    return fallbackHomepage;
+  }
+
+  const heroImage =
+    getSanityImageUrl(homepage.heroImage, { width: 2200, quality: 84 }) ||
+    null;
+  const featuredPortfolio =
+    homepage.featuredPortfolio?.map(mapPortfolioItem).filter(isDefined) ?? [];
+
+  return {
+    heroTitle: homepage.heroTitle || fallbackHomepage.heroTitle,
+    heroSubtitle: homepage.heroSubtitle || fallbackHomepage.heroSubtitle,
+    heroImage,
+    heroImageAlt: homepage.heroImageAlt || fallbackHomepage.heroImageAlt,
+    heroImagePosition: getImagePosition(homepage.heroImagePosition),
+    ctaPrimary: homepage.ctaPrimary || fallbackHomepage.ctaPrimary,
+    ctaSecondary: homepage.ctaSecondary || fallbackHomepage.ctaSecondary,
+    featuredPortfolio,
+  };
+});
+
+export const getAboutContent = cache(async (): Promise<AboutContent> => {
+  const about = await sanityFetch<SanityAbout>({
+    query: aboutQuery,
+    tags: ["about"],
+  });
+
+  if (!about) {
+    return fallbackAbout;
+  }
+
+  return {
+    title: about.title || fallbackAbout.title,
+    subtitle: about.subtitle || fallbackAbout.subtitle,
+    body: about.body || fallbackAbout.body,
+    image: getSanityImageUrl(about.image, { width: 1400 }),
+    imageAlt: about.imageAlt || fallbackAbout.imageAlt,
+    imagePosition: getImagePosition(about.imagePosition),
+  };
+});
+
+export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
+  const settings = await sanityFetch<SanitySiteSettings>({
+    query: siteSettingsQuery,
+    tags: ["siteSettings"],
+  });
+
+  if (!settings) {
+    return fallbackSiteSettings;
+  }
+
+  const email = settings.email || fallbackSiteSettings.email;
+
+  return {
+    ...fallbackSiteSettings,
+    title: settings.seoTitle || fallbackSiteSettings.title,
+    description: settings.seoDescription || fallbackSiteSettings.description,
+    email,
+    address: settings.address,
+    links: {
+      whatsapp: getWhatsAppUrl(settings.whatsappNumber),
+      instagram: settings.instagramUrl || fallbackSiteSettings.links.instagram,
+      email: `mailto:${email}`,
+    },
+  };
+});

@@ -1,0 +1,91 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@theme {
+  --color-ivory: #FAF7F2;
+  --color-blush: #E8CFCF;
+  --color-warm-beige: #DCC8A0;
+  --color-sage: #AAB7A3;
+  --color-anthracite: #2F2F2F;
+  --font-sans: "Inter", "Segoe UI", Arial, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --shadow-soft: 0 22px 60px rgba(47, 47, 47, 0.08);
+  --shadow-editorial: 0 28px 80px rgba(47, 47, 47, 0.14);
+}
+
+:root {
+  color-scheme: light;
+  background: #FAF7F2;
+  color: #2F2F2F;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(232, 207, 207, 0.32), transparent 30rem),
+    linear-gradient(180deg, #FAF7F2 0%, #fffaf4 52%, #FAF7F2 100%);
+  color: #2F2F2F;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+svg {
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: #E8CFCF;
+  color: #2F2F2F;
+}
+
+:focus-visible {
+  outline-color: #AAB7A3;
+}
+
+.container-page {
+  width: min(100% - 2.5rem, 76rem);
+  margin-inline: auto;
+}
+
+.section-y {
+  padding-block: clamp(4.5rem, 8vw, 8rem);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.editorial-image {
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #E8CFCF;
+}
+
+.subtle-grid {
+  background-image:
+    linear-gradient(rgba(47, 47, 47, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 47, 47, 0.05) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+}
