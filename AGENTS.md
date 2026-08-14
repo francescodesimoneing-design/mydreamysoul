@@ -33,6 +33,7 @@ Il progetto e' predisposto per un futuro ecommerce, ma attualmente non include c
 - `src/lib/cms.ts` contiene query GROQ, mapping verso i tipi applicativi e fallback neutri.
 - `src/lib/image.ts` costruisce URL immagini Sanity.
 - `src/lib/image-position.ts` converte i valori CMS in `object-position` CSS.
+- `src/app/globals.css` importa Tailwind, definisce i token `@theme`, helper globali e reset HTML locali.
 - `sanity.config.ts` configura Sanity Studio con `basePath: "/studio"`.
 - `src/app/studio/[[...tool]]/page.tsx` monta `NextStudio`.
 - I componenti con animazioni o stato locale sono client component (`"use client"`); le pagine restano prevalentemente server component.
@@ -160,6 +161,7 @@ Non esiste uno script `test` nel `package.json` attuale.
 - Usare `getSanityImageUrl` o `urlFor` per sorgenti Sanity.
 - Mantenere alt text obbligatorio negli schemi immagine Sanity.
 - Usare Tailwind e token esistenti: ivory, blush, warm-beige, sage, anthracite.
+- Con Tailwind v4, le regole CSS globali che resettano elementi HTML devono stare nel layer appropriato, di norma `@layer base`, per non scavalcare le utility come `text-ivory` o `text-anthracite`.
 - Mantenere un tono editoriale, artigianale e non industriale nei testi UI.
 - Aggiornare `AGENTS.md` e `PROJECT_LOG.md` solo quando richiesto esplicitamente.
 
@@ -169,6 +171,7 @@ Non esiste uno script `test` nel `package.json` attuale.
 - `src/app/layout.tsx` fa data fetching CMS anche per metadata. Le failure Sanity devono continuare a ricadere su fallback neutri.
 - `sanityFetch` usa `useCdn: true`, `perspective: "published"` e `revalidate` default a 60 secondi.
 - `/studio/[[...tool]]` e' dinamica e pesante rispetto alle pagine pubbliche; non ottimizzarla come una pagina marketing.
+- Il reset globale degli anchor in `src/app/globals.css` deve restare dentro `@layer base`. Se viene lasciato fuori layer, in Tailwind v4 puo' finire dopo le utility colore nel CSS compilato e rendere invisibile il testo dei CTA scuri basati su `Link`/`a`.
 - `ContactForm` non invia dati a un backend: mostra solo stato UI locale.
 - La predisposizione ecommerce e' solo strutturale: evitare di aggiungere checkout o pagamenti senza richiesta esplicita.
 
