@@ -42,16 +42,25 @@ export type ProductCategory =
   | "Accessori"
   | "Idee regalo";
 
+export type ProductStatus = "available" | "sold" | "madeToOrder" | "archived";
+
+export type ProductImage = {
+  image: string;
+  alt: string;
+  imagePosition: ImagePosition;
+};
+
 export type Product = {
   id: string;
   name: string;
   category: ProductCategory;
   description: string;
-  image: string;
-  alt: string;
-  imagePosition: ImagePosition;
-  startingPrice: string;
-  madeToOrder: boolean;
+  images: ProductImage[];
+  price?: number;
+  priceLabel: string;
+  size?: string;
+  materials?: string;
+  status: ProductStatus;
   featured?: boolean;
   order?: number;
 };
