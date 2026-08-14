@@ -11,6 +11,8 @@ import type {
   PortfolioItem,
   Product,
   ProductCategory,
+  ProductImage,
+  ProductStatus,
   SiteSettings,
   Testimonial,
 } from "@/types";
@@ -51,11 +53,15 @@ const productFields = groq`
   "slug": slug.current,
   category,
   description,
-  image,
-  "alt": coalesce(image.alt, title),
-  "imagePosition": coalesce(imagePosition, "center"),
-  priceFrom,
-  availableOnRequest,
+  images[]{
+    ...,
+    "alt": coalesce(alt, ^.title),
+    "imagePosition": coalesce(imagePosition, "center")
+  },
+  price,
+  size,
+  materials,
+  status,
   featured,
   order
 `;
@@ -67,7 +73,7 @@ const portfolioItemsQuery = groq`
 `;
 
 const productsQuery = groq`
-  *[_type == "product"] | order(coalesce(order, 9999) asc, _createdAt desc) {
+  *[_type == "product" && status != "archived"] | order(coalesce(order, 9999) asc, _createdAt desc) {
     ${productFields}
   }
 `;
@@ -138,13 +144,18 @@ type SanityProduct = {
   title?: string;
   category?: string;
   description?: string;
-  image?: SanityImageSource;
-  alt?: string;
-  imagePosition?: string;
-  priceFrom?: string;
-  availableOnRequest?: boolean;
+  images?: SanityProductImage[];
+  price?: number;
+  size?: string;
+  materials?: string;
+  status?: string;
   featured?: boolean;
   order?: number;
+};
+
+type SanityProductImage = SanityImageSource & {
+  alt?: string;
+  imagePosition?: string;
 };
 
 type SanityTestimonial = {
@@ -192,7 +203,7 @@ const fallbackHomepage: HomepageContent = {
   heroImageAlt: "",
   heroImagePosition: "center",
   ctaPrimary: "Richiedi una creazione su misura",
-  ctaSecondary: "Vai al portfolio",
+  ctaSecondary: "Le mie realizzazioni",
   featuredPortfolio: [],
 };
 
@@ -225,6 +236,15 @@ function isProductCategory(category: string | undefined): category is ProductCat
   return Boolean(category && productCategories.includes(category as ProductCategory));
 }
 
+function isProductStatus(status: string | undefined): status is ProductStatus {
+  return (
+    status === "available" ||
+    status === "sold" ||
+    status === "madeToOrder" ||
+    status === "archived"
+  );
+}
+
 function isImagePosition(position: string | undefined): position is ImagePosition {
   return (
     position === "center" ||
@@ -237,6 +257,37 @@ function isImagePosition(position: string | undefined): position is ImagePositio
 
 function getImagePosition(position: string | undefined): ImagePosition {
   return isImagePosition(position) ? position : "center";
+}
+
+function formatPrice(price: number | undefined) {
+  if (typeof price !== "number" || !Number.isFinite(price)) {
+    return null;
+  }
+
+  return new Intl.NumberFormat("it-IT", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: Number.isInteger(price) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(price);
+}
+
+function mapProductImage(
+  image: SanityImageSource | null | undefined,
+  alt: string | undefined,
+  imagePosition: string | undefined,
+): ProductImage | null {
+  const imageUrl = getSanityImageUrl(image, { width: 1400 });
+
+  if (!imageUrl) {
+    return null;
+  }
+
+  return {
+    image: imageUrl,
+    alt: alt || "Creazione sartoriale MyDreamySoul",
+    imagePosition: getImagePosition(imagePosition),
+  };
 }
 
 function isDefined<T>(value: T | null | undefined): value is T {
@@ -274,9 +325,27 @@ function mapPortfolioItem(item: SanityPortfolioItem): PortfolioItem | null {
 }
 
 function mapProduct(item: SanityProduct): Product | null {
-  const image = getSanityImageUrl(item.image, { width: 1400 });
+  const cmsImages =
+    item.images
+      ?.map((image) =>
+        mapProductImage(
+          image,
+          image.alt || item.title,
+          image.imagePosition,
+        ),
+      )
+      .filter(isDefined) ?? [];
+  const images = cmsImages;
+  const primaryImage = images[0];
 
-  if (!item.title || !item.description || !image || !isProductCategory(item.category)) {
+  if (
+    !item.title ||
+    !item.description ||
+    !primaryImage ||
+    !isProductCategory(item.category) ||
+    !isProductStatus(item.status) ||
+    item.status === "archived"
+  ) {
     return null;
   }
 
@@ -285,11 +354,12 @@ function mapProduct(item: SanityProduct): Product | null {
     name: item.title,
     category: item.category,
     description: item.description,
-    image,
-    alt: item.alt || item.title,
-    imagePosition: getImagePosition(item.imagePosition),
-    startingPrice: item.priceFrom || "Da definire",
-    madeToOrder: item.availableOnRequest ?? true,
+    images,
+    price: item.price,
+    priceLabel: formatPrice(item.price) || "Prezzo su richiesta",
+    size: item.size,
+    materials: item.materials,
+    status: item.status,
     featured: item.featured,
     order: item.order,
   };

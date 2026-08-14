@@ -39,7 +39,7 @@ export function PortfolioGallery({ items }: PortfolioGalleryProps) {
       <EmptyState
         eyebrow="Sanity Studio"
         title="Aggiungi contenuti da Sanity Studio"
-        description="Pubblica almeno un progetto Portfolio con immagine reale per mostrarlo in questa galleria."
+        description="Pubblica almeno una realizzazione con immagine reale per mostrarla in questa galleria."
       />
     );
   }
@@ -49,7 +49,7 @@ export function PortfolioGallery({ items }: PortfolioGalleryProps) {
       <div
         className="mb-10 flex gap-2 overflow-x-auto pb-2"
         role="tablist"
-        aria-label="Filtra portfolio per categoria"
+        aria-label="Filtra le realizzazioni per categoria"
       >
         {categories.map((category) => {
           const active = activeCategory === category;
@@ -84,7 +84,7 @@ export function PortfolioGallery({ items }: PortfolioGalleryProps) {
         <div className="mt-10">
           <EmptyState
             title="Nessun contenuto in questa categoria"
-            description="Pubblica o ricategorizza un progetto da Sanity Studio per popolare questo filtro."
+            description="Pubblica o ricategorizza una realizzazione da Sanity Studio per popolare questo filtro."
           />
         </div>
       ) : null}

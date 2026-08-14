@@ -54,7 +54,7 @@ export default async function HomePage() {
                 title: "Boutique Artigianale",
                 text: "Creazioni realizzate a mano da Serena, pensate per essere indossate con facilita senza rinunciare alla qualita sartoriale. Ogni capo nasce da cartamodelli originali, tessuti selezionati e lavorazioni curate nei dettagli.",
                 href: "/boutique",
-                cta: "Scopri la Boutique Artigianale",
+                cta: "Acquista in Boutique",
               },
               {
                 title: "Sartoria su misura",
@@ -158,16 +158,16 @@ export default async function HomePage() {
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <AnimatedSection>
                 <SectionTitle
-                  eyebrow="Portfolio"
-                  title="Creazioni in evidenza"
-                  description="Una selezione di creazioni realizzate a mano da Serena."
+                  eyebrow="Le mie realizzazioni"
+                  title="Lavori gia realizzati da Serena"
+                  description="Una selezione di capi, pezzi unici e dettagli sartoriali che raccontano stile, tecnica e cura artigianale."
                 />
               </AnimatedSection>
               <Link
                 href="/portfolio"
                 className="inline-flex w-fit rounded-full border border-anthracite/16 px-5 py-3 text-sm font-semibold text-anthracite transition hover:border-sage hover:bg-sage/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sage"
               >
-                Guarda la galleria
+                Guarda le realizzazioni
               </Link>
             </div>
             <div className="mt-12 grid gap-9 sm:grid-cols-2 lg:grid-cols-3">

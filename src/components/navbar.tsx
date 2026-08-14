@@ -13,7 +13,7 @@ const navItems = [
   { href: "/chi-sono", label: "Chi sono" },
   { href: "/sartoria-su-misura", label: "Sartoria su misura" },
   { href: "/boutique", label: "Boutique Artigianale" },
-  { href: "/portfolio", label: "Portfolio" },
+  { href: "/portfolio", label: "Le mie realizzazioni" },
   { href: "/contatti", label: "Contatti" },
 ];
 
