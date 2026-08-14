@@ -39,7 +39,7 @@ export default async function HomePage() {
         ctaSecondary={homepage.ctaSecondary}
       />
 
-      <section className="section-y bg-ivory">
+      <section className="bg-ivory pt-14 pb-20 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28">
         <div className="container-page">
           <AnimatedSection>
             <SectionTitle
@@ -160,7 +160,7 @@ export default async function HomePage() {
                 <SectionTitle
                   eyebrow="Portfolio"
                   title="Creazioni in evidenza"
-                  description="Una selezione di progetti pubblicati da Sanity Studio."
+                  description="Una selezione di creazioni realizzate a mano da Serena."
                 />
               </AnimatedSection>
               <Link
