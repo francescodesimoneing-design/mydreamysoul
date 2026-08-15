@@ -52,6 +52,7 @@ export type ProductImage = {
 
 export type Product = {
   id: string;
+  slug: string;
   name: string;
   category: ProductCategory;
   description: string;

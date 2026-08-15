@@ -395,6 +395,7 @@ function mapProduct(item: SanityProduct): Product | null {
   const primaryImage = images[0];
 
   if (
+    !item.slug ||
     !item.title ||
     !item.description ||
     !primaryImage ||
@@ -407,6 +408,7 @@ function mapProduct(item: SanityProduct): Product | null {
 
   return {
     id: item.slug || item._id,
+    slug: item.slug,
     name: item.title,
     category: item.category,
     description: item.description,

@@ -72,10 +72,10 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
         ) : null}
         <Link
-          href="/contatti"
+          href={`/contatti?tipo=boutique&prodotto=${encodeURIComponent(product.slug)}`}
           className="mt-6 inline-flex w-fit items-center gap-2 text-sm font-semibold text-anthracite underline decoration-sage/70 underline-offset-8 transition hover:decoration-anthracite focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sage"
         >
-          Richiedi dettagli
+          Chiedi informazioni
           <ArrowUpRight aria-hidden="true" size={16} />
         </Link>
       </div>
