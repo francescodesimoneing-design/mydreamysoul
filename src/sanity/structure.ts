@@ -1,6 +1,6 @@
 import type { StructureResolver } from "sanity/structure";
 
-const singletonTypes = ["homepage", "about", "siteSettings"];
+const singletonTypes = ["homepage", "about", "tailoringPage", "siteSettings"];
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -23,6 +23,15 @@ export const structure: StructureResolver = (S) =>
             .schemaType("about")
             .documentId("about")
             .title("Chi sono"),
+        ),
+      S.listItem()
+        .title("Sartoria su misura")
+        .schemaType("tailoringPage")
+        .child(
+          S.document()
+            .schemaType("tailoringPage")
+            .documentId("tailoringPage")
+            .title("Sartoria su misura"),
         ),
       S.listItem()
         .title("Impostazioni sito")

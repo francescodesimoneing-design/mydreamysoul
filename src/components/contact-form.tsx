@@ -1,7 +1,19 @@
 "use client";
 
-import { Send, Upload } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { Send, Upload, X } from "lucide-react";
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useRef,
+  useState,
+} from "react";
+
+import {
+  formatAttachmentSize,
+  getQuoteAttachmentError,
+  quoteAttachmentAccept,
+  quoteAttachmentLimits,
+} from "@/lib/contact-attachments";
 
 type ContactFormProps = {
   variant?: "contact" | "quote";
@@ -14,45 +26,110 @@ const errorMessage =
 
 export function ContactForm({ variant = "contact" }: ContactFormProps) {
   const [status, setStatus] = useState<FormStatus>("idle");
-  const [hasUnsentReferences, setHasUnsentReferences] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState(errorMessage);
+  const [sentAttachmentCount, setSentAttachmentCount] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isQuote = variant === "quote";
+  const isSubmitting = status === "submitting";
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.currentTarget.files || []);
+    const validationError = getQuoteAttachmentError(files);
+
+    if (validationError) {
+      event.currentTarget.value = "";
+      setSelectedFiles([]);
+      setFileError(validationError);
+      return;
+    }
+
+    setSelectedFiles(files);
+    setFileError(null);
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    setSelectedFiles((files) =>
+      files.filter((_, index) => index !== indexToRemove),
+    );
+    setFileError(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const selectedReferences = formData
-      .getAll("references")
-      .some((value) => value instanceof File && value.size > 0);
 
-    setStatus("submitting");
-    setHasUnsentReferences(false);
+    if (isQuote) {
+      const validationError = getQuoteAttachmentError(selectedFiles);
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          requestType: isQuote ? "quote" : "contact",
-          name: formData.get("name"),
-          email: formData.get("email"),
-          subject: formData.get("subject"),
-          message: formData.get("message"),
-          website: formData.get("website"),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Contact request failed");
+      if (validationError) {
+        setFileError(validationError);
+        return;
       }
 
+      formData.set("requestType", "quote");
+      formData.delete("references");
+      selectedFiles.forEach((file) => formData.append("references", file));
+    }
+
+    setStatus("submitting");
+    setSubmissionError(errorMessage);
+    setSentAttachmentCount(0);
+
+    try {
+      const response = await fetch(
+        "/api/contact",
+        isQuote
+          ? {
+              method: "POST",
+              body: formData,
+            }
+          : {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                requestType: "contact",
+                name: formData.get("name"),
+                email: formData.get("email"),
+                subject: formData.get("subject"),
+                message: formData.get("message"),
+                website: formData.get("website"),
+              }),
+            },
+      );
+
+      const responseBody = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+
+      if (!response.ok) {
+        setSubmissionError(
+          response.status >= 400 &&
+            response.status < 500 &&
+            responseBody?.message
+            ? responseBody.message
+            : errorMessage,
+        );
+        setStatus("error");
+        return;
+      }
+
+      setSentAttachmentCount(selectedFiles.length);
       form.reset();
-      setHasUnsentReferences(selectedReferences);
+      setSelectedFiles([]);
+      setFileError(null);
       setStatus("success");
     } catch {
+      setSubmissionError(errorMessage);
       setStatus("error");
     }
   };
@@ -85,6 +162,7 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
             autoComplete="name"
             minLength={2}
             maxLength={100}
+            disabled={isSubmitting}
             className="rounded-sm border border-anthracite/14 bg-ivory px-4 py-3 text-base font-normal text-anthracite outline-none transition focus:border-sage focus:ring-4 focus:ring-sage/20"
           />
         </label>
@@ -96,6 +174,7 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
             type="email"
             autoComplete="email"
             maxLength={254}
+            disabled={isSubmitting}
             className="rounded-sm border border-anthracite/14 bg-ivory px-4 py-3 text-base font-normal text-anthracite outline-none transition focus:border-sage focus:ring-4 focus:ring-sage/20"
           />
         </label>
@@ -109,26 +188,71 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
           type="text"
           minLength={2}
           maxLength={150}
+          disabled={isSubmitting}
           placeholder={isQuote ? "Gonna, abito, fiocco nascita..." : "Come posso aiutarti?"}
           className="rounded-sm border border-anthracite/14 bg-ivory px-4 py-3 text-base font-normal text-anthracite outline-none transition placeholder:text-anthracite/36 focus:border-sage focus:ring-4 focus:ring-sage/20"
         />
       </label>
 
       {isQuote ? (
-        <label className="grid gap-2 text-sm font-semibold text-anthracite">
-          Immagini di riferimento
-          <span className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-anthracite/24 bg-ivory px-4 py-6 text-center text-sm font-normal text-anthracite/58 transition hover:border-sage hover:bg-sage/10">
+        <div className="grid gap-2 text-sm font-semibold text-anthracite">
+          <span>Immagini di riferimento (facoltative)</span>
+          <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-anthracite/24 bg-ivory px-4 py-6 text-center text-sm font-normal text-anthracite/58 transition hover:border-sage hover:bg-sage/10">
             <Upload aria-hidden="true" size={22} className="mb-2 text-anthracite" />
-            Carica immagini, moodboard o dettagli utili
+            Scegli immagini, moodboard o dettagli utili
+            <span className="mt-1 text-xs text-anthracite/48">
+              JPEG, PNG o WebP. Massimo {quoteAttachmentLimits.maxFiles} immagini
+              da 2 MB ciascuna.
+            </span>
             <input
+              ref={fileInputRef}
               name="references"
               type="file"
               multiple
-              accept="image/*,.pdf"
+              accept={quoteAttachmentAccept}
+              disabled={isSubmitting}
+              onChange={handleFileChange}
+              aria-describedby="reference-files-help"
               className="sr-only"
             />
+          </label>
+          <span id="reference-files-help" className="sr-only">
+            Puoi allegare fino a due immagini JPEG, PNG o WebP, massimo 2 MB per
+            file.
           </span>
-        </label>
+          {selectedFiles.length ? (
+            <ul className="mt-2 grid gap-2" aria-label="Immagini selezionate">
+              {selectedFiles.map((file, index) => (
+                <li
+                  key={`${file.name}-${file.lastModified}-${index}`}
+                  className="flex min-w-0 items-center gap-3 rounded-sm border border-anthracite/12 bg-ivory px-4 py-3 text-sm font-normal"
+                >
+                  <span className="min-w-0 flex-1 truncate text-anthracite">
+                    {file.name}
+                  </span>
+                  <span className="shrink-0 text-xs text-anthracite/50">
+                    {formatAttachmentSize(file.size)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    disabled={isSubmitting}
+                    title={`Rimuovi ${file.name}`}
+                    aria-label={`Rimuovi ${file.name}`}
+                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-anthracite/60 transition hover:bg-blush/40 hover:text-anthracite focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage disabled:cursor-wait disabled:opacity-50"
+                  >
+                    <X aria-hidden="true" size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {fileError ? (
+            <p className="text-sm font-semibold text-anthracite" role="alert">
+              {fileError}
+            </p>
+          ) : null}
+        </div>
       ) : null}
 
       <label className="grid gap-2 text-sm font-semibold text-anthracite">
@@ -139,6 +263,7 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
           rows={6}
           minLength={2}
           maxLength={5000}
+          disabled={isSubmitting}
           placeholder={
             isQuote
               ? "Racconta occasione, misure note, tessuti desiderati e tempi."
@@ -154,7 +279,7 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
         </p>
         <button
           type="submit"
-          disabled={status === "submitting"}
+          disabled={isSubmitting}
           className="inline-flex items-center justify-center gap-2 rounded-full bg-anthracite px-7 py-4 text-sm font-semibold text-ivory shadow-soft transition hover:-translate-y-0.5 hover:bg-anthracite/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sage disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0"
         >
           {status === "submitting"
@@ -172,8 +297,8 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
           role="status"
           aria-live="polite"
         >
-          {hasUnsentReferences
-            ? "Richiesta inviata. Le immagini selezionate non sono state allegate: condividile con Serena su WhatsApp."
+          {sentAttachmentCount
+            ? "Richiesta inviata correttamente. Le immagini sono state allegate per Serena."
             : "Richiesta inviata correttamente. Serena ti rispondera appena possibile."}
         </p>
       ) : null}
@@ -184,7 +309,7 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
           role="alert"
           aria-live="assertive"
         >
-          {errorMessage}
+          {submissionError}
         </p>
       ) : null}
     </form>

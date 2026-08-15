@@ -99,6 +99,15 @@ export type AboutContent = {
   storyImagePosition: ImagePosition;
 };
 
+export type TailoringPageContent = {
+  introImage: string | null;
+  introImageAlt: string;
+  introImagePosition: ImagePosition;
+  processImage: string | null;
+  processImageAlt: string;
+  processImagePosition: ImagePosition;
+};
+
 export type SiteSettings = {
   name: string;
   title: string;

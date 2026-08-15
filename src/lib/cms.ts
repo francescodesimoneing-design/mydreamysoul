@@ -14,6 +14,7 @@ import type {
   ProductImage,
   ProductStatus,
   SiteSettings,
+  TailoringPageContent,
   Testimonial,
 } from "@/types";
 
@@ -117,6 +118,17 @@ const aboutQuery = groq`
   }
 `;
 
+const tailoringPageQuery = groq`
+  *[_type == "tailoringPage"][0] {
+    introImage,
+    "introImageAlt": introImage.alt,
+    "introImagePosition": coalesce(introImagePosition, "center"),
+    processImage,
+    "processImageAlt": processImage.alt,
+    "processImagePosition": coalesce(processImagePosition, "center")
+  }
+`;
+
 const siteSettingsQuery = groq`
   *[_type == "siteSettings"][0] {
     whatsappNumber,
@@ -192,6 +204,15 @@ type SanityAbout = {
   storyImagePosition?: string;
 };
 
+type SanityTailoringPage = {
+  introImage?: SanityImageSource;
+  introImageAlt?: string;
+  introImagePosition?: string;
+  processImage?: SanityImageSource;
+  processImageAlt?: string;
+  processImagePosition?: string;
+};
+
 type SanitySiteSettings = {
   whatsappNumber?: string;
   email?: string;
@@ -236,6 +257,15 @@ Il mondo MyDreamySoul è così: delicato ma mai anonimo, femminile ma con caratt
   storyImage: null,
   storyImageAlt: "",
   storyImagePosition: "center",
+};
+
+const fallbackTailoringPage: TailoringPageContent = {
+  introImage: null,
+  introImageAlt: "",
+  introImagePosition: "center",
+  processImage: null,
+  processImageAlt: "",
+  processImagePosition: "center",
 };
 
 const fallbackSiteSettings: SiteSettings = {
@@ -477,6 +507,28 @@ export const getAboutContent = cache(async (): Promise<AboutContent> => {
     storyImagePosition: getImagePosition(about.storyImagePosition),
   };
 });
+
+export const getTailoringPageContent = cache(
+  async (): Promise<TailoringPageContent> => {
+    const page = await sanityFetch<SanityTailoringPage>({
+      query: tailoringPageQuery,
+      tags: ["tailoringPage"],
+    });
+
+    if (!page) {
+      return fallbackTailoringPage;
+    }
+
+    return {
+      introImage: getSanityImageUrl(page.introImage, { width: 1400 }),
+      introImageAlt: page.introImageAlt || "",
+      introImagePosition: getImagePosition(page.introImagePosition),
+      processImage: getSanityImageUrl(page.processImage, { width: 2200 }),
+      processImageAlt: page.processImageAlt || "",
+      processImagePosition: getImagePosition(page.processImagePosition),
+    };
+  },
+);
 
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   const settings = await sanityFetch<SanitySiteSettings>({
