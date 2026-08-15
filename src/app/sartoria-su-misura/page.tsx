@@ -69,7 +69,7 @@ export default async function SartoriaSuMisuraPage() {
                   dedicato.
                 </p>
                 <p className="mt-6 max-w-sm text-sm leading-7 text-anthracite/62">
-                  Modello, proporzioni, tessuti, vestibilita e finiture vengono
+                  Modello, proporzioni, tessuti, vestibilità e finiture vengono
                   studiati insieme a Serena.
                 </p>
               </div>
@@ -92,12 +92,12 @@ export default async function SartoriaSuMisuraPage() {
           </div>
           {page.processImage ? (
             <AnimatedSection className="mt-16" delay={0.1}>
-              <div className="editorial-image relative aspect-[4/3] sm:aspect-[16/7]">
+              <div className="editorial-image relative mx-auto aspect-[4/3] w-full max-w-3xl">
                 <Image
                   src={page.processImage}
                   alt={page.processImageAlt}
                   fill
-                  sizes="(min-width: 1280px) 1200px, 100vw"
+                  sizes="(min-width: 1024px) 768px, (min-width: 640px) calc(100vw - 4rem), calc(100vw - 2.5rem)"
                   className="object-cover"
                   style={{
                     objectPosition: getObjectPosition(page.processImagePosition),
@@ -115,16 +115,16 @@ export default async function SartoriaSuMisuraPage() {
             <SectionTitle
               eyebrow="Preventivo"
               title="Racconta il capo che immagini"
-              description="Invia una richiesta con note, occasione d'uso e immagini di riferimento. Serena potra valutare modello, proporzioni, tessuti, tempi e rifiniture."
+              description="Invia una richiesta con note, occasione d'uso e immagini di riferimento. Serena potrà valutare modello, proporzioni, tessuti, tempi e rifiniture."
             />
             <div className="mt-8 border-t border-anthracite/14 pt-6 text-sm leading-7 text-anthracite/64">
               <p>
                 Puoi allegare moodboard, foto di ispirazione, palette colore o
-                dettagli tecnici. Serena ti rispondera con una prima valutazione
+                dettagli tecnici. Serena ti risponderà con una prima valutazione
                 e i prossimi step.
               </p>
               <p className="mt-6 font-semibold text-anthracite">
-                Preferisci scrivere direttamente? Contatta Serena anche su
+                Preferisci parlarne direttamente con Serena? Scrivimi su
                 WhatsApp o Instagram.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
