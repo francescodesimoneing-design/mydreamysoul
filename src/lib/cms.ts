@@ -110,7 +110,10 @@ const aboutQuery = groq`
     body,
     image,
     "imageAlt": coalesce(image.alt, title),
-    "imagePosition": coalesce(imagePosition, "center")
+    "imagePosition": coalesce(imagePosition, "center"),
+    storyImage,
+    "storyImageAlt": coalesce(storyImage.alt, title),
+    "storyImagePosition": coalesce(storyImagePosition, "center")
   }
 `;
 
@@ -184,6 +187,9 @@ type SanityAbout = {
   image?: SanityImageSource;
   imageAlt?: string;
   imagePosition?: string;
+  storyImage?: SanityImageSource;
+  storyImageAlt?: string;
+  storyImagePosition?: string;
 };
 
 type SanitySiteSettings = {
@@ -208,14 +214,28 @@ const fallbackHomepage: HomepageContent = {
 };
 
 const fallbackAbout: AboutContent = {
-  title: "Aggiungi la sezione Chi sono da Sanity Studio",
+  title: "Serena Manna, modellista sartoriale",
   subtitle:
-    "Inserisci storia, filosofia e immagine reale dell'atelier nel documento Chi sono.",
-  body:
-    "Aggiungi contenuti da Sanity Studio per raccontare Serena, il laboratorio e il processo sartoriale.",
+    "Disegno abiti da quando ero bambina. Oggi trasformo intuizioni e tessuti in cartamodelli e creazioni sartoriali.",
+  body: `Già all'asilo riempivo i fogli di figurini, linee e forme, immaginando che un giorno avrei lavorato nel mondo della moda. Poi, come spesso accade, la vita ha preso altre strade. Ma quella passione non è mai davvero scomparsa.
+
+Con il tempo ho deciso di tornarci, questa volta con consapevolezza: ho studiato, imparato il mestiere e approfondito la modellistica sartoriale, trasformando ciò che prima era soltanto un'intuizione in qualcosa di concreto.
+
+Oggi, quando guardo un tessuto, spesso riesco già a immaginare il capo che potrebbe diventare. Da lì nasce il cartamodello, poi il taglio, la cucitura, le prove e infine una creazione che prima esisteva soltanto nella mia mente.
+
+MyDreamySoul nasce proprio da questo percorso. Il nome racconta qualcosa di profondamente personale: un sogno che, poco alla volta, ha trovato la sua forma attraverso la sartoria.
+
+Le mie creazioni si ispirano a un'eleganza senza tempo, con richiami rétro reinterpretati in modo personale. Amo le linee femminili, i dettagli sartoriali e soprattutto i tessuti particolari: quelli capaci di dare carattere a un capo e di renderlo diverso da qualsiasi altro.
+
+Mi piace creare abiti e accessori che valorizzino chi li indossa senza uniformarlo, perché credo che un capo artigianale debba raccontare qualcosa della persona per cui è stato pensato.
+
+Il mondo MyDreamySoul è così: delicato ma mai anonimo, femminile ma con carattere, elegante e allo stesso tempo capace di sorprendere. Ogni creazione nasce dalle mie mani, da un cartamodello e da una storia ancora da raccontare.`,
   image: null,
   imageAlt: "",
   imagePosition: "center",
+  storyImage: null,
+  storyImageAlt: "",
+  storyImagePosition: "center",
 };
 
 const fallbackSiteSettings: SiteSettings = {
@@ -452,6 +472,9 @@ export const getAboutContent = cache(async (): Promise<AboutContent> => {
     image: getSanityImageUrl(about.image, { width: 1400 }),
     imageAlt: about.imageAlt || fallbackAbout.imageAlt,
     imagePosition: getImagePosition(about.imagePosition),
+    storyImage: getSanityImageUrl(about.storyImage, { width: 1200 }),
+    storyImageAlt: about.storyImageAlt || fallbackAbout.storyImageAlt,
+    storyImagePosition: getImagePosition(about.storyImagePosition),
   };
 });
 

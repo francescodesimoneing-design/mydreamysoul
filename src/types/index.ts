@@ -94,6 +94,9 @@ export type AboutContent = {
   image: string | null;
   imageAlt: string;
   imagePosition: ImagePosition;
+  storyImage: string | null;
+  storyImageAlt: string;
+  storyImagePosition: ImagePosition;
 };
 
 export type SiteSettings = {

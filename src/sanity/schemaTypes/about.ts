@@ -52,6 +52,35 @@ export const about = defineType({
       },
       initialValue: "center",
     }),
+    defineField({
+      name: "storyImage",
+      title: "Immagine della storia",
+      type: "image",
+      description:
+        "Carica una seconda foto reale di Serena al lavoro, tra i suoi capi o con gli strumenti da modellista.",
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Testo alternativo",
+          description: "Descrivi brevemente cosa mostra la fotografia.",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
+    }),
+    defineField({
+      name: "storyImagePosition",
+      title: "Posizione immagine della storia",
+      description:
+        "Usa questo campo se la seconda foto viene tagliata male nella pagina Chi sono.",
+      type: "string",
+      options: {
+        list: imagePositionOptions,
+        layout: "radio",
+      },
+      initialValue: "center",
+    }),
   ],
   preview: {
     prepare: () => ({

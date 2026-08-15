@@ -8,9 +8,9 @@ import { getAboutContent } from "@/lib/cms";
 import { getObjectPosition } from "@/lib/image-position";
 
 export const metadata: Metadata = {
-  title: "Chi Sono",
+  title: "Serena Manna, modellista sartoriale",
   description:
-    "Scopri Serena Manna, modellista sartoriale e fondatrice di MyDreamySoul Handmade.",
+    "La storia di Serena Manna, modellista sartoriale e fondatrice di MyDreamySoul Handmade: dall'intuizione al cartamodello, fino alla creazione.",
 };
 
 export default async function ChiSonoPage() {
@@ -64,8 +64,22 @@ export default async function ChiSonoPage() {
           <AnimatedSection>
             <SectionTitle
               eyebrow="La mia storia"
-              title="Serena Manna, modellista sartoriale"
+              title="Una passione che viene da lontano"
             />
+            {about.storyImage ? (
+              <div className="editorial-image relative mx-auto mt-10 aspect-[4/5] w-full max-w-xl lg:mx-0">
+                <Image
+                  src={about.storyImage}
+                  alt={about.storyImageAlt}
+                  fill
+                  sizes="(min-width: 1024px) 34vw, (min-width: 640px) 576px, 100vw"
+                  className="object-cover"
+                  style={{
+                    objectPosition: getObjectPosition(about.storyImagePosition),
+                  }}
+                />
+              </div>
+            ) : null}
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <div className="grid gap-7 text-base leading-8 text-anthracite/70">
@@ -81,20 +95,20 @@ export default async function ChiSonoPage() {
         <div className="container-page grid gap-8 md:grid-cols-4">
           {[
             {
-              title: "Studio della vestibilita",
-              text: "Ogni capo viene pensato per accompagnare il corpo con naturalezza.",
+              title: "Lo sguardo da modellista",
+              text: "Da un tessuto Serena immagina linee, volumi e il capo che potrebbe diventare.",
             },
             {
-              title: "Cartamodello originale",
-              text: "La forma nasce dal disegno tecnico, dalle misure e dalla mano sartoriale.",
+              title: "Dall'idea alla forma",
+              text: "L'intuizione passa attraverso il cartamodello, il taglio, la cucitura e le prove.",
             },
             {
-              title: "Proporzioni curate",
-              text: "Volumi, lunghezze e dettagli vengono studiati per dare equilibrio al capo.",
+              title: "Eleganza con carattere",
+              text: "Linee femminili, richiami rétro e tessuti particolari rendono ogni creazione riconoscibile.",
             },
             {
-              title: "Lavoro manuale",
-              text: "La qualita emerge nelle finiture, nei passaggi lenti e nella cura dei dettagli.",
+              title: "Pensata per la persona",
+              text: "Il lavoro artigianale valorizza chi indossa il capo senza uniformarne lo stile.",
             },
           ].map((item) => (
             <AnimatedSection key={item.title}>
@@ -120,7 +134,8 @@ export default async function ChiSonoPage() {
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <p className="font-serif text-3xl leading-snug text-anthracite sm:text-4xl">
-              Il percorso sartoriale viene raccontato e aggiornato nella sezione dedicata.
+              Hai in mente un capo che racconti davvero qualcosa di te? Iniziamo
+              dal tuo stile, dalle tue misure e dalla tua idea.
             </p>
             <Link
               href="/sartoria-su-misura"
