@@ -2,18 +2,39 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 import { getQuoteAttachmentError } from "@/lib/contact-attachments";
+import {
+  getContactReasonLabel,
+  isContactReason,
+  parseProductSlug,
+  type ContactReason,
+} from "@/lib/contact-reasons";
+import { getProductBySlug } from "@/lib/cms";
 
 export const runtime = "nodejs";
 
-type RequestType = "contact" | "quote";
-
-type ContactRequest = {
-  requestType: RequestType;
+type BaseContactRequest = {
   name: string;
   email: string;
   subject: string;
   message: string;
 };
+
+type ContactRequest = BaseContactRequest &
+  (
+    | {
+        requestType: "contact";
+        reason: ContactReason;
+        productSlug?: string;
+      }
+    | {
+        requestType: "quote";
+      }
+  );
+
+type BoutiqueProductContext = {
+  id: string;
+  name: string;
+} | null;
 
 type ParsedRequestBody = {
   payload: unknown;
@@ -70,16 +91,51 @@ function parseRequest(payload: unknown): ContactRequest | null {
     return null;
   }
 
-  return {
-    requestType,
+  const baseRequest = {
     name,
     email,
     subject,
     message,
   };
+
+  if (requestType === "quote") {
+    return {
+      ...baseRequest,
+      requestType,
+    };
+  }
+
+  const reason = getTrimmedString(record.reason);
+
+  if (!isContactReason(reason)) {
+    return null;
+  }
+
+  const hasProductSlug =
+    record.productSlug !== undefined &&
+    record.productSlug !== null &&
+    record.productSlug !== "";
+  const productSlug = hasProductSlug
+    ? parseProductSlug(record.productSlug)
+    : null;
+
+  if (hasProductSlug && !productSlug) {
+    return null;
+  }
+
+  return {
+    ...baseRequest,
+    requestType,
+    reason,
+    productSlug: productSlug ?? undefined,
+  };
 }
 
-function buildEmailText(request: ContactRequest, attachmentCount: number) {
+function buildEmailText(
+  request: ContactRequest,
+  attachmentCount: number,
+  boutiqueProduct: BoutiqueProductContext,
+) {
   const subjectLabel =
     request.requestType === "quote" ? "Tipo di creazione" : "Oggetto";
 
@@ -90,11 +146,22 @@ function buildEmailText(request: ContactRequest, attachmentCount: number) {
     "",
     `Nome: ${request.name}`,
     `Email: ${request.email}`,
-    `${subjectLabel}: ${request.subject}`,
-    "",
-    "Messaggio:",
-    request.message,
   ];
+
+  if (request.requestType === "contact") {
+    lines.push(`Motivo della richiesta: ${getContactReasonLabel(request.reason)}`);
+  }
+
+  lines.push(`${subjectLabel}: ${request.subject}`);
+
+  if (boutiqueProduct) {
+    lines.push(
+      `Prodotto Boutique: ${boutiqueProduct.name}`,
+      `Riferimento prodotto: ${boutiqueProduct.id}`,
+    );
+  }
+
+  lines.push("", "Messaggio:", request.message);
 
   if (request.requestType === "quote") {
     lines.push(
@@ -285,6 +352,11 @@ export async function POST(request: Request) {
     );
   }
 
+  const boutiqueProduct =
+    contactRequest.requestType === "contact" && contactRequest.productSlug
+      ? await getProductBySlug(contactRequest.productSlug)
+      : null;
+
   const resend = new Resend(apiKey);
   const emailSubject =
     contactRequest.requestType === "quote"
@@ -297,7 +369,7 @@ export async function POST(request: Request) {
       to: [toEmail],
       replyTo: contactRequest.email,
       subject: emailSubject,
-      text: buildEmailText(contactRequest, attachments.length),
+      text: buildEmailText(contactRequest, attachments.length, boutiqueProduct),
       attachments: attachments.length ? attachments : undefined,
     });
 
@@ -305,7 +377,7 @@ export async function POST(request: Request) {
       console.error("Resend ha rifiutato una richiesta email dal form contatti.");
 
       return NextResponse.json(
-        { ok: false, message: "Invio non riuscito. Riprova piu tardi." },
+        { ok: false, message: "Invio non riuscito. Riprova più tardi." },
         { status: 502 },
       );
     }
@@ -313,7 +385,7 @@ export async function POST(request: Request) {
     console.error("Errore inatteso durante l'invio del form contatti.");
 
     return NextResponse.json(
-      { ok: false, message: "Invio non riuscito. Riprova piu tardi." },
+      { ok: false, message: "Invio non riuscito. Riprova più tardi." },
       { status: 502 },
     );
   }

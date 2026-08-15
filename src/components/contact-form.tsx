@@ -14,9 +14,15 @@ import {
   quoteAttachmentAccept,
   quoteAttachmentLimits,
 } from "@/lib/contact-attachments";
+import {
+  contactReasonOptions,
+  type ContactReason,
+} from "@/lib/contact-reasons";
 
 type ContactFormProps = {
   variant?: "contact" | "quote";
+  initialReason?: ContactReason;
+  productSlug?: string;
 };
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -24,7 +30,11 @@ type FormStatus = "idle" | "submitting" | "success" | "error";
 const errorMessage =
   "Non siamo riusciti a inviare la richiesta. Riprova oppure contattaci su WhatsApp.";
 
-export function ContactForm({ variant = "contact" }: ContactFormProps) {
+export function ContactForm({
+  variant = "contact",
+  initialReason,
+  productSlug,
+}: ContactFormProps) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -100,8 +110,10 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
                 requestType: "contact",
                 name: formData.get("name"),
                 email: formData.get("email"),
+                reason: formData.get("reason"),
                 subject: formData.get("subject"),
                 message: formData.get("message"),
+                productSlug: formData.get("productSlug"),
                 website: formData.get("website"),
               }),
             },
@@ -152,6 +164,10 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
         />
       </div>
 
+      {!isQuote && productSlug ? (
+        <input name="productSlug" type="hidden" value={productSlug} />
+      ) : null}
+
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="grid gap-2 text-sm font-semibold text-anthracite">
           Nome
@@ -179,6 +195,28 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
           />
         </label>
       </div>
+
+      {!isQuote ? (
+        <label className="grid gap-2 text-sm font-semibold text-anthracite">
+          Motivo della richiesta
+          <select
+            required
+            name="reason"
+            defaultValue={initialReason ?? ""}
+            disabled={isSubmitting}
+            className="rounded-sm border border-anthracite/14 bg-ivory px-4 py-3 text-base font-normal text-anthracite outline-none transition focus:border-sage focus:ring-4 focus:ring-sage/20"
+          >
+            <option value="" disabled>
+              Seleziona un motivo
+            </option>
+            {contactReasonOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
 
       <label className="grid gap-2 text-sm font-semibold text-anthracite">
         {isQuote ? "Tipo di creazione" : "Oggetto"}
@@ -299,7 +337,7 @@ export function ContactForm({ variant = "contact" }: ContactFormProps) {
         >
           {sentAttachmentCount
             ? "Richiesta inviata correttamente. Le immagini sono state allegate per Serena."
-            : "Richiesta inviata correttamente. Serena ti rispondera appena possibile."}
+            : "Richiesta inviata correttamente. Serena ti risponderà appena possibile."}
         </p>
       ) : null}
 

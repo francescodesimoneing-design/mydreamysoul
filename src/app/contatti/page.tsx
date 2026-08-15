@@ -4,7 +4,8 @@ import { Instagram, Mail, MessageCircle } from "lucide-react";
 import { AnimatedSection } from "@/components/animated-section";
 import { ContactForm } from "@/components/contact-form";
 import { SectionTitle } from "@/components/section-title";
-import { getSiteSettings } from "@/lib/cms";
+import { getProductBySlug, getSiteSettings } from "@/lib/cms";
+import { parseProductSlug } from "@/lib/contact-reasons";
 
 export const metadata: Metadata = {
   title: "Contatti",
@@ -12,8 +13,20 @@ export const metadata: Metadata = {
     "Contatta MyDreamySoul Handmade via WhatsApp, Instagram, email o form per richiedere una creazione sartoriale artigianale.",
 };
 
-export default async function ContattiPage() {
-  const settings = await getSiteSettings();
+type ContattiPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function ContattiPage({ searchParams }: ContattiPageProps) {
+  const params = await searchParams;
+  const isBoutiqueRequest = params.tipo === "boutique";
+  const productSlug = isBoutiqueRequest
+    ? parseProductSlug(params.prodotto)
+    : null;
+  const [settings, boutiqueProduct] = await Promise.all([
+    getSiteSettings(),
+    productSlug ? getProductBySlug(productSlug) : Promise.resolve(null),
+  ]);
   const contactLinks = [
     {
       label: "WhatsApp",
@@ -44,11 +57,11 @@ export default async function ContattiPage() {
               Contatti
             </p>
             <h1 className="max-w-4xl font-serif text-5xl font-semibold leading-tight text-anthracite text-balance sm:text-6xl">
-              Inizia da un messaggio, poi costruiamo il capo insieme
+              Inizia da un messaggio
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-anthracite/68">
-              Racconta occasione, stile e tempi. Serena ti rispondera per
-              valutare la creazione piu adatta.
+              Raccontami cosa hai in mente o di quali informazioni hai bisogno.
+              Serena ti risponderà personalmente.
             </p>
           </AnimatedSection>
         </div>
@@ -59,7 +72,7 @@ export default async function ContattiPage() {
           <AnimatedSection>
             <SectionTitle
               eyebrow="Canali"
-              title="Scegli il modo piu comodo per contattare l'atelier"
+              title="Scegli il modo più comodo per contattare l'atelier"
             />
             <div className="mt-9 grid gap-4">
               {contactLinks.map((item) => {
@@ -92,7 +105,22 @@ export default async function ContattiPage() {
 
           <AnimatedSection delay={0.1}>
             <div className="bg-blush/25 p-5 sm:p-8">
-              <ContactForm />
+              {boutiqueProduct ? (
+                <div className="mb-6 border-b border-anthracite/14 pb-6">
+                  <p className="text-sm leading-6 text-anthracite/62">
+                    Stai chiedendo informazioni su:
+                  </p>
+                  <p className="mt-1 font-serif text-2xl font-semibold text-anthracite">
+                    {boutiqueProduct.name}
+                  </p>
+                </div>
+              ) : null}
+              <ContactForm
+                initialReason={
+                  isBoutiqueRequest ? "boutique_product_info" : undefined
+                }
+                productSlug={boutiqueProduct ? productSlug ?? undefined : undefined}
+              />
             </div>
           </AnimatedSection>
         </div>

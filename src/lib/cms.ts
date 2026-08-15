@@ -79,6 +79,12 @@ const productsQuery = groq`
   }
 `;
 
+const productBySlugQuery = groq`
+  *[_type == "product" && slug.current == $slug && status != "archived"][0] {
+    ${productFields}
+  }
+`;
+
 const testimonialsQuery = groq`
   *[_type == "testimonial" && coalesce(featured, true) == true] | order(_createdAt desc) {
     _id,
@@ -446,6 +452,18 @@ export const getProducts = cache(async (): Promise<Product[]> => {
   const mappedItems = items?.map(mapProduct).filter(isDefined) ?? [];
   return mappedItems;
 });
+
+export const getProductBySlug = cache(
+  async (slug: string): Promise<Product | null> => {
+    const item = await sanityFetch<SanityProduct>({
+      query: productBySlugQuery,
+      params: { slug },
+      tags: ["product"],
+    });
+
+    return item ? mapProduct(item) : null;
+  },
+);
 
 export const getTestimonials = cache(async (): Promise<Testimonial[]> => {
   const items = await sanityFetch<SanityTestimonial[]>({
